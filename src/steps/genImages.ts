@@ -9,7 +9,7 @@ import { getLandscapeSize, getSquareSize } from "../lib/imageSizes.js";
 import { hashObject } from "../lib/hash.js";
 import { ensureJobCache, ensureItemCache } from "../lib/jobCache.js";
 import { getImageProvider } from "../lib/images/index.js";
-import { buildIconPromptText } from "../lib/prompts/iconImage.js";
+import { buildExplainerIconPromptText } from "../lib/prompts/iconImage.js";
 import { extractHookObjects } from "../lib/hookObjects.js";
 import {
   buildSceneImageJsonPrompt,
@@ -39,7 +39,7 @@ async function maybeGenerateIcon(
   const iconExists = await fileExists(iconPath);
   if (!force && iconExists) return;
   const hookObjects = extractHookObjects(item.hook, item.voiceoverScript, 28);
-  const iconPromptText = buildIconPromptText({ iconIdea: item.iconIdea, hookObjects });
+  const iconPromptText = buildExplainerIconPromptText({ iconIdea: item.iconIdea, hookObjects });
   const iconSize = getSquareSize() as "1024x1024";
   const relIcon = path.join("images", `${item.id}_icon.png`);
   try {
@@ -65,7 +65,14 @@ export async function genImages(
   opts?: GenImagesOptions
 ) {
   const raw = await fs.readFile(jobPath, "utf8");
-  const job = JobSchema.parse(JSON.parse(raw));
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    throw new Error(`Invalid JSON in job file ${jobPath}: ${msg}`);
+  }
+  const job = JobSchema.parse(parsed);
   ensureJobCache(job);
 
   const options = opts ?? {};
@@ -170,6 +177,7 @@ export async function genImages(
         const sceneJson = buildSceneImageJsonPrompt(
           scene,
           item,
+          job,
           characterProfile.name,
           characterProfile.styleLock
         );
@@ -294,11 +302,7 @@ Do not output 6 panels. Do not output portrait. No text anywhere.
 
           item.imagePath = relativeImagePath;
           itemCache.genImages = stepHash;
-          console.log(
-            providerName === "gemini"
-              ? `Saved: ${relativeImagePath} (${size.width}x${size.height})`
-              : `Saved: ${relativeImagePath} (${size.width}x${size.height})`
-          );
+          console.log(`Saved: ${relativeImagePath} (${size.width}x${size.height})`);
 
           lastErr = null;
           break;

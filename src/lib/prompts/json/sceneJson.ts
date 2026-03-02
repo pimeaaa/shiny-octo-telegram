@@ -106,47 +106,46 @@ export function buildSceneImageJsonPrompt(
     constraints: [
       "All content inside 10% safe margins from edges",
       "Character scale consistent with shot type",
-      "No text, no letters, no numbers in image",
     ],
     negative_constraints: [
-      "no text",
-      "no letters",
-      "no numbers",
-      "no punctuation",
-      "no symbols",
-      "no vignette",
-      "no off-white or beige background",
+      "NO text, NO letters, NO numbers, NO words",
+      "NO speech bubbles or captions",
+      "NO punctuation or symbols",
+      "NO vignette or borders",
+      "NO off-white, beige, or textured background",
     ],
   };
 }
 
 /**
- * Stringify JSON prompt into a single text prompt for OpenAI.
+ * Stringify JSON prompt into a single text prompt.
+ * Re-ordered to front-load the character, action, and subject for optimal Gemini indexing.
  */
 export function sceneJsonToTextPrompt(json: SceneImageJsonPrompt): string {
   const lines: string[] = [
-    "Create a single-panel image. LANDSCAPE. One scene only.",
+    "A single-panel digital illustration. LANDSCAPE.",
     "",
-    "SUBJECT: " + json.subject,
-    "",
-    "COMPOSITION: " + json.composition.description + ". Character " + json.composition.characterFrameHeightPercent + "% of frame height. All content inside " + json.composition.safeMarginsPercent + "% safe margins.",
-    "",
-    "CHARACTER: " + json.character.name + " — " + json.character.action,
+    // Front-load the character and action so the model anchors on it immediately
+    `CHARACTER: ${json.character.name}. ${json.character.action}`,
     json.character.styleLock,
     "",
-    "PROPS: " + (json.props.length ? json.props.join(", ") : "none"),
+    `SUBJECT & CONTEXT: ${json.subject}`,
+    `PROPS: ${json.props.length ? json.props.join(", ") : "none"}`,
+    "",
+    "COMPOSITION:",
+    `- ${json.composition.description}`,
+    `- Character is ${json.composition.characterFrameHeightPercent}% of frame height.`,
+    `- All content inside ${json.composition.safeMarginsPercent}% safe margins.`,
     "",
     "ENVIRONMENT / BACKGROUND:",
     ...json.environment.rules.map((r) => "- " + r),
     json.environment.groundShadow ? "- " + json.environment.groundShadow : "",
     "",
-    "LIGHTING: " + json.lighting,
-    "STYLE: " + json.style,
+    `LIGHTING: ${json.lighting}`,
+    `STYLE: ${json.style}`,
     "",
-    "CONSTRAINTS:",
-    ...json.constraints.map((c) => "- " + c),
-    "",
-    "DO NOT: " + json.negative_constraints.join(", "),
+    "CRITICAL CONSTRAINTS (DO NOT INCLUDE THESE):",
+    ...json.negative_constraints.map((c) => "- " + c),
   ];
   return lines.filter((s) => s !== "").join("\n");
 }

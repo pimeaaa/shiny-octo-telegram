@@ -447,6 +447,12 @@ OBJECT ESCALATION:
 ${escalationGuidance}
 ${hookObjectLine}
 
+CHARACTER ACTION RULES:
+- "nicoAction" MUST describe a frozen physical state, not internal thoughts.
+- Use this exact formula: [Facial Expression] + [Body Posture] + [Hand Placement/Prop Interaction].
+- BAD: "Nico thinks about the problem."
+- GOOD: "Eyes wide, eyebrows furrowed. Leaning forward. Left hand scratching head, right hand pointing at the object."
+
 Other rules: No text. No letters, numbers, punctuation, emojis. Nico in every scene. Props: minimal, never text-like.
 
 You will create exactly ${sceneCount} scenes.
@@ -469,7 +475,7 @@ Return STRICT JSON only:
       "shot": "medium",
       "intensity": "low",
       "visual": "Short description",
-      "nicoAction": "What Nico does",
+      "nicoAction": "Eyes wide, leaning back, both hands raised in defense",
       "props": ["concrete", "prop"],
       "weight": 2,
       "motion": "zoomSlow",
