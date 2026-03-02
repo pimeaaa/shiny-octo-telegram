@@ -1,0 +1,41 @@
+{
+  "name": "GridForge",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "gridforge": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli/index.ts",
+    "create-job": "tsx src/cli/index.ts create-job",
+    "write-scripts": "tsx src/cli/index.ts write-scripts",
+    "storyboard": "tsx src/cli/index.ts storyboard",
+    "gen-images": "tsx src/cli/index.ts gen-images",
+    "gen-audio-local": "tsx src/cli/index.ts gen-audio-local",
+    "gen-audio-elevenlabs": "tsx src/cli/index.ts gen-audio-elevenlabs",
+    "render-clips": "tsx src/cli/index.ts render-clips",
+    "compile": "tsx src/cli/index.ts compile",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.21.0",
+  "devDependencies": {
+    "@types/node": "^25.3.3",
+    "eslint": "^10.0.2",
+    "prettier": "^3.8.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.3.1",
+    "openai": "^6.25.0",
+    "zod": "^4.3.6"
+  }
+}
